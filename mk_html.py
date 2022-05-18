@@ -49,7 +49,7 @@ def create_html(html_file_path='./timeline_chart.html'):
     controlType: 'ChartRangeFilter',
     containerId: 'control',
     options: {
-      filterColumnIndex: 2,
+      filterColumnIndex: 1,
       ui: {
         minRangeSize: (60 * 60 * 1000),
         chartType: 'TimeLine',
@@ -76,7 +76,7 @@ def create_html(html_file_path='./timeline_chart.html'):
     containerId: 'chart',
     options: {
       width: '100%',
-      height: 600,
+      height: '100%',
       chartArea: {
         width: '100%',
         height: '80%'
@@ -98,6 +98,45 @@ def create_html(html_file_path='./timeline_chart.html'):
   [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
   [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
   [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+  [ 'Adams',      new Date(1797, 2, 4),  new Date(1801, 2, 4) ],
+  [ 'Jefferson',  new Date(1801, 2, 4),  new Date(1809, 2, 4) ],
   ]);
 
   dashboard.bind(control, chart);
@@ -107,11 +146,11 @@ def create_html(html_file_path='./timeline_chart.html'):
 
     with doc:
         with div():
-            attr(id='dashboard', style='width: 100%;')
+            attr(id='dashboard', style='width: 100%; height: 98vh;')
             with div():
-                attr(id='chart', style='width: 100%;')
+                attr(id='control', cls='chart', style='width: 100%; height: 10%;')
             with div():
-                attr(id='control', style='width: 100%;')
+                attr(id='chart', cls='chart', style='width: 100%; height: 90%;')
         with script(get_js_str()):
             attr(type='text/javascript')
 
