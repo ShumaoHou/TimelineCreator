@@ -48,14 +48,15 @@ def print_rows(data_dict_arr=None):
     """
     It will print like this:
 
-    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+    [ 'Washington', 'fine', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
     """
     if data_dict_arr is None:
         data_dict_arr = []
     rows_str = ''
     for data in data_dict_arr:
-        row_str = "['"
-        row_str += str(data['pkg']) + "',"
+        row_str = "["
+        row_str += "'" + str(data['pkg']) + "',"
+        row_str += "'" + str(data['tooltip']) + "',"
         row_str += str(data['start']) + ','
         row_str += str(data['end']) + '],'
         rows_str += row_str
@@ -93,7 +94,7 @@ def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./d
     controlType: 'ChartRangeFilter',
     containerId: 'control',
     options: {
-      filterColumnIndex: 1,
+      filterColumnIndex: 2,
       ui: {
         minRangeSize: (60 * 60 * 1000),
         chartType: 'TimeLine',
@@ -108,9 +109,9 @@ def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./d
             baselineColor: 'none'
           }
         },
-        chartView: {columns: [1, 2]}
+        chartView: {columns: [2, 3]}
         }
-      }
+      },
     });
 
     var chart = new google.visualization.ChartWrapper({
@@ -125,10 +126,7 @@ def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./d
         },
         tooltip: {
           isHtml: true
-        }
-      },
-      view: {
-        columns: [0, 1, 2]
+        },
       }
     });
 

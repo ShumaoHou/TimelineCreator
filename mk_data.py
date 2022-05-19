@@ -8,17 +8,20 @@ from utils.util import ms_str_2_date
 data = {
     "columns": [
         {"type": 'string', "id": 'pkg'},
+        {"type": 'string', "role": 'tooltip'},
         {"type": 'date', "id": 'Start'},
         {"type": 'date', "id": 'End'}
     ],
     "rows": [
         {
             'pkg': 'com.test.demo1',
+            'tooltip': 'good',
             'start': ms_str_2_date("1652953734"),
             'end': ms_str_2_date("1652963734")
         },
         {
             'pkg': 'com.test.demo2',
+            'tooltip': 'fine',
             'start': ms_str_2_date("1652962734"),
             'end': ms_str_2_date("1652973734")
         },
