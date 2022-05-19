@@ -5,11 +5,53 @@ import dominate
 from dominate.tags import *
 import json
 
+from utils.util import ms_str_2_date
+
+DEBUG = True
 js_str = ''
 
 
-def print_rows(data_dict_arr=[]):
-    """  [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],"""
+def parse_json_data_file(json_data_file):
+    with open(json_data_file) as f:
+        return json.load(f)
+
+
+def parse_json_data_str(json_data_str):
+    return json.loads(json_data_str)
+
+
+def print_columns(data_table='dataTable', column_dict_arr=None):
+    """
+    It will print like this:
+
+    dataTable.addColumn(
+    { type: 'string', id: 'pkg' }
+    );
+    :param data_table:
+    :param column_dict_arr:
+    :return:
+    """
+    if column_dict_arr is None:
+        column_dict_arr = []
+    columns_str = ''
+    for column in column_dict_arr:
+        row_str = data_table + ".addColumn("
+        row_str += json.dumps(column)
+        row_str += ");"
+        columns_str += row_str
+    if DEBUG:
+        print(columns_str)
+    return columns_str
+
+
+def print_rows(data_dict_arr=None):
+    """
+    It will print like this:
+
+    [ 'Washington', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+    """
+    if data_dict_arr is None:
+        data_dict_arr = []
     rows_str = ''
     for data in data_dict_arr:
         row_str = "['"
@@ -17,14 +59,16 @@ def print_rows(data_dict_arr=[]):
         row_str += str(data['start']) + ','
         row_str += str(data['end']) + '],'
         rows_str += row_str
+    if DEBUG:
+        print(rows_str)
     return rows_str
 
 
-def create_html(html_file_path='./timeline_chart.html', json_data=""):
+def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./data/data.json'):
     """
     Create HTML by json_data.
-    :param html_file_path: HTML file path
-    :param json_data: source data
+    :param dist_html_file: HTML file path
+    :param json_data_file: source data
     :return: None
     """
     doc = dominate.document(title='LogShow')
@@ -35,20 +79,6 @@ def create_html(html_file_path='./timeline_chart.html', json_data=""):
         script(src='scripts/jquery.min.js')
         script(src='https://www.gstatic.com/charts/loader.js')
         script(src='scripts/loader.js')
-
-    # eg = 'creator/echart_gantt.js'
-    # egf = get_resource_path(eg)
-    # egd = 'creator/echart_gantt_data.js'
-    # egdf = get_resource_path(egd)
-    # with open(egf, "r+", encoding='UTF-8') as fi, \
-    #         open(egdf, "w", encoding='UTF-8') as fo:
-    #     old = fi.read()
-    #     fo.write("var _rawData = ")
-    #     fo.write(get_json_data())
-    #     fo.write(";")
-    #     fo.write(old)
-    # with open(egdf, 'r', encoding='UTF-8') as f:
-    #     js = f.read()
 
     append_js_str("""
     google.charts.load("current", {packages:["timeline","controls"],'language': 'ja'});
@@ -83,38 +113,31 @@ def create_html(html_file_path='./timeline_chart.html', json_data=""):
       }
     });
 
-  var chart = new google.visualization.ChartWrapper({
-    chartType: 'Timeline',
-    containerId: 'chart',
-    options: {
-      width: '100%',
-      height: '100%',
-      chartArea: {
+    var chart = new google.visualization.ChartWrapper({
+      chartType: 'Timeline',
+      containerId: 'chart',
+      options: {
         width: '100%',
-        height: '80%'
+        height: '100%',
+        chartArea: {
+          width: '100%',
+          height: '80%'
+        },
+        tooltip: {
+          isHtml: true
+        }
       },
-      tooltip: {
-        isHtml: true
+      view: {
+        columns: [0, 1, 2]
       }
-    },
-    view: {
-      columns: [0, 1, 2]
-    }
-  });
+    });
 
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn({ type: 'string', id: 'pkg' });
-    dataTable.addColumn({ type: 'date', id: 'Start' });
-    dataTable.addColumn({ type: 'date', id: 'End' });
-    dataTable.addRows([""")
-    # TODO: get real data and convert to data_dict_arr
-    data = {
-        'pkg': 'com.baidu',
-        'start': ms_str_2_date("200"),
-        'end': ms_str_2_date("300"),
-    }
-    data_dict_arr = [data]
-    append_js_str(print_rows(data_dict_arr))
+    """)
+    json_data = parse_json_data_file(json_data_file)
+    append_js_str(print_columns('dataTable', json_data['columns']))
+    append_js_str("""dataTable.addRows([""")
+    append_js_str(print_rows(json_data['rows']))
     append_js_str("""]);
     dashboard.bind(control, chart);
     dashboard.draw(dataTable);
@@ -138,19 +161,10 @@ def create_html(html_file_path='./timeline_chart.html', json_data=""):
     doc_str = doc_str.replace('&gt;', '>')
     doc_str = doc_str.replace('&quot;', '"')
 
-    with open(html_file_path, 'w') as f:
+    with open(dist_html_file, 'w') as f:
         f.write(doc_str)
 
-    os.startfile(os.path.abspath(html_file_path))
-
-
-def ms_str_2_date(ms_str):
-    """
-    Convert timeMs to js Date.
-    :param ms_str: timeMs string.
-    :return: js Date str.
-    """
-    return "new Date(%s * 1000)" % ms_str
+    os.startfile(os.path.abspath(dist_html_file))
 
 
 def append_js_str(js_append):

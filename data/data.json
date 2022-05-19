@@ -1,0 +1,1 @@
+{"columns": [{"type": "string", "id": "pkg"}, {"type": "date", "id": "Start"}, {"type": "date", "id": "End"}], "rows": [{"pkg": "com.test.demo1", "start": "new Date(1652953734 * 1000)", "end": "new Date(1652963734 * 1000)"}, {"pkg": "com.test.demo2", "start": "new Date(1652962734 * 1000)", "end": "new Date(1652973734 * 1000)"}]}

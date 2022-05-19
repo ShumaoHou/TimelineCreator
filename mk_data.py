@@ -1,25 +1,10 @@
-# TimelineCreator
-This is a Creator for Timeline or Gantt by Python.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-## Getting Started
+import json
 
-#### CMD run this:
+from utils.util import ms_str_2_date
 
-```shell
-python mk_data.py
-python mk_html.py
-start  ./dist/timeline_chart.html
-```
-
-## How to create a Timeline HTML with your data:
-
-**mk_data.py** can create a temporary **data.json** file to debug.
-
-Otherwise, you can create a similar file or python dict like that.
-
-Your data should like this:
-
-```python
 data = {
     "columns": [
         {"type": 'string', "id": 'pkg'},
@@ -39,4 +24,17 @@ data = {
         },
     ]
 }
-```
+
+
+def create_data_file():
+    """
+    Create a temporary data.json file to debug.
+    Otherwise, you can create a similar file or python dict like this.
+    :return:
+    """
+    with open("data/data.json", "w") as file:
+        json.dump(data, file)
+
+
+if __name__ == '__main__':
+    create_data_file()
