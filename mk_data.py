@@ -8,6 +8,7 @@ from utils.util import ms_str_2_date
 data = {
     "columns": [
         {"type": 'string', "id": 'pkg'},
+        {"type": 'string', "id": 'label'},
         {"type": 'string', "role": 'tooltip'},
         {"type": 'date', "id": 'Start'},
         {"type": 'date', "id": 'End'}
@@ -15,13 +16,15 @@ data = {
     "rows": [
         {
             'pkg': 'com.test.demo1',
-            'tooltip': 'good',
+            'label': "null",
+            'tooltip': '<img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" style="width:75px;height:50px"><br/>',
             'start': ms_str_2_date("1652953734"),
             'end': ms_str_2_date("1652963734")
         },
         {
             'pkg': 'com.test.demo2',
-            'tooltip': 'fine',
+            'label': "null",
+            'tooltip': '<img src="https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg" style="width:75px;height:50px"><br/>',
             'start': ms_str_2_date("1652954734"),
             'end': ms_str_2_date("1652973734")
         },

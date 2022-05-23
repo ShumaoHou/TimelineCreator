@@ -35,9 +35,12 @@ def print_columns(data_table='dataTable', column_dict_arr=None):
         column_dict_arr = []
     columns_str = ''
     for column in column_dict_arr:
-        row_str = data_table + ".addColumn("
-        row_str += json.dumps(column)
-        row_str += ");"
+        row_str = data_table + ".addColumn({"
+        for key, value in column.items():
+            row_str += key + ":'" + value + "',"
+            pass
+        row_str = row_str[:-1]
+        row_str += "});"
         columns_str += row_str
     if DEBUG:
         print(columns_str)
@@ -56,6 +59,7 @@ def print_rows(data_dict_arr=None):
     for data in data_dict_arr:
         row_str = "["
         row_str += "'" + str(data['pkg']) + "',"
+        row_str += "'" + str(data['label']) + "',"
         row_str += "'" + str(data['tooltip']) + "',"
         row_str += str(data['start']) + ','
         row_str += str(data['end']) + '],'
@@ -63,6 +67,21 @@ def print_rows(data_dict_arr=None):
     if DEBUG:
         print(rows_str)
     return rows_str
+
+
+def print_chart_options(colors):
+    """Print Options provided to the visualization."""
+    res = "var options = {" \
+          "timeline: { colorByRowLabel: true }," \
+          "backgroundColor: '#ffd'," \
+          "tooltip: {isHtml: true},"
+    color_string = ""
+    for i in range(len(colors)):
+        color_string += "'" + colors[i] + "',"
+        pass
+    res += "colors: [%s]" \
+           "};" % color_string
+    return res
 
 
 def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeline_chart.html'):
@@ -82,63 +101,21 @@ def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeli
         script(src='scripts/loader.js')
 
     append_js_str("""
-    google.charts.load("current", {packages:["timeline","controls"]});
+    google.charts.load("current", {packages:["timeline"]});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-    var dashboard = new google.visualization.Dashboard(
-        document.getElementById('dashboard')
-    );
-
-    var control = new google.visualization.ControlWrapper({
-    controlType: 'ChartRangeFilter',
-    containerId: 'control',
-    options: {
-      filterColumnIndex: 2,
-      ui: {
-        minRangeSize: (60 * 60 * 1000),
-        chartType: 'TimeLine',
-        chartOptions: {
-          width: '100%',
-          height: 70,
-          chartArea: {
-            width: '90%',
-            height: '80%'
-          },
-          hAxis: {
-            baselineColor: 'none'
-          }
-        },
-        chartView: {columns: [2, 3]}
-        }
-      },
-    });
-
-    var chart = new google.visualization.ChartWrapper({
-      chartType: 'Timeline',
-      containerId: 'chart',
-      options: {
-        width: '100%',
-        height: '100%',
-        chartArea: {
-          width: '100%',
-          height: '80%'
-        },
-        tooltip: {
-          isHtml: true
-        },
-      }
-    });
-
-    var dataTable = new google.visualization.DataTable();
+        var container = document.getElementById('dashboard');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
     """)
+    append_js_str(print_chart_options(['black', 'gray']))
     json_data = parse_json_data_file(json_data_file)
     append_js_str(print_columns('dataTable', json_data['columns']))
     append_js_str("""dataTable.addRows([""")
     append_js_str(print_rows(json_data['rows']))
     append_js_str("""]);
-    dashboard.bind(control, chart);
-    dashboard.draw(dataTable);
+        chart.draw(dataTable, options);
     }
     """)
 
@@ -152,7 +129,7 @@ def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeli
         with script(get_js_str()):
             attr(type='text/javascript')
 
-    # 去掉转义字符串
+    # Delete & string.
     doc_str = str(doc)
     doc_str = doc_str.replace('&amp;', '&')
     doc_str = doc_str.replace('&lt;', '<')
@@ -184,7 +161,6 @@ def main(argv):
     except Exception as e:
         print(help_info)
         print(e)
-    finally:
         if DEBUG:
             create_html()
 
