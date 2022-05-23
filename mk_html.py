@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import os
+import sys
+
 import dominate
 from dominate.tags import *
-import json
-
-from utils.util import ms_str_2_date
 
 DEBUG = True
 js_str = ''
@@ -65,7 +65,7 @@ def print_rows(data_dict_arr=None):
     return rows_str
 
 
-def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./data/data.json'):
+def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeline_chart.html'):
     """
     Create HTML by json_data.
     :param dist_html_file: HTML file path
@@ -82,7 +82,7 @@ def create_html(dist_html_file='./dist/timeline_chart.html', json_data_file='./d
         script(src='scripts/loader.js')
 
     append_js_str("""
-    google.charts.load("current", {packages:["timeline","controls"],'language': 'ja'});
+    google.charts.load("current", {packages:["timeline","controls"]});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
@@ -175,5 +175,19 @@ def get_js_str():
     return js_str
 
 
+def main(argv):
+    help_info = "Please enter cmd: python " + argv[0] + " [data file] [html file]"
+    try:
+        data_file = argv[1]
+        html_file = argv[2]
+        create_html(data_file, html_file)
+    except Exception as e:
+        print(help_info)
+        print(e)
+    finally:
+        if DEBUG:
+            create_html()
+
+
 if __name__ == '__main__':
-    create_html()
+    main(sys.argv)
