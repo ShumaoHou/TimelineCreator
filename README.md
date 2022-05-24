@@ -1,5 +1,11 @@
 # TimelineCreator
-This is a Creator for Timeline or Gantt by Python.
+This is a Creator for Timeline or Gantt by Python. ——2022.05.18
+
+Use [vis-timeline](https://github.com/visjs/vis-timeline) to draw the chart. ——2022.05.25
+
+## Demo chart
+
+![demo1](assets/demo1.png)
 
 ## Getting Started
 
@@ -21,20 +27,23 @@ Your data should like this:
 
 ```python
 data = {
-    "columns": [
-        {"type": 'string', "id": 'pkg'},
-        {"type": 'date', "id": 'Start'},
-        {"type": 'date', "id": 'End'}
+    "groups": [
+        {"id": 1, "content": "com.test.demo1"},
+        {"id": 2, "content": "com.test.demo2"}
     ],
-    "rows": [
+    "items": [
         {
-            'pkg': 'com.test.demo1',
+            'group': 1,
+            'id': 1,
+            'content': 'test group 1',
             'start': ms_str_2_date("1652953734"),
             'end': ms_str_2_date("1652963734")
         },
         {
-            'pkg': 'com.test.demo2',
-            'start': ms_str_2_date("1652962734"),
+            'group': 2,
+            'id': 2,
+            'content': 'test group 2',
+            'start': ms_str_2_date("1652954734"),
             'end': ms_str_2_date("1652973734")
         },
     ]

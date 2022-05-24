@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-import sys
 
 import dominate
 from dominate.tags import *
@@ -20,67 +19,73 @@ def parse_json_data_str(json_data_str):
     return json.loads(json_data_str)
 
 
-def print_columns(data_table='dataTable', column_dict_arr=None):
+def print_groups(arr_groups_dict):
     """
     It will print like this:
 
-    dataTable.addColumn(
-    { type: 'string', id: 'pkg' }
+    // create groups
+    var groups = new vis.DataSet(
+    [
+      { id: 1, content: "Truck&nbsp;1" },
+      { id: 2, content: "Truck&nbsp;2" },
+      { id: 3, content: "Truck&nbsp;3" },
+      { id: 4, content: "Truck&nbsp;4" },
+    ]
     );
-    :param data_table:
-    :param column_dict_arr:
-    :return:
     """
-    if column_dict_arr is None:
-        column_dict_arr = []
-    columns_str = ''
-    for column in column_dict_arr:
-        row_str = data_table + ".addColumn({"
-        for key, value in column.items():
-            row_str += key + ":'" + value + "',"
-            pass
-        row_str = row_str[:-1]
-        row_str += "});"
-        columns_str += row_str
+    groups_str = """
+    // create groups
+    var groups = new vis.DataSet(
+    """
+    groups_str += json.dumps(arr_groups_dict)
+    groups_str += """
+    );
+    """
     if DEBUG:
-        print(columns_str)
-    return columns_str
+        print(groups_str)
+    return groups_str
 
 
-def print_rows(data_dict_arr=None):
+def print_rows(arr_items_dict):
     """
     It will print like this:
 
-    [ 'Washington', 'fine', new Date(1789, 3, 30), new Date(1797, 2, 4) ],
+    // create items
+    var items = new vis.DataSet([
+        {
+          id: order,
+          group: truck,
+          start: start,
+          end: end,
+          content: "Order " + order,
+        }
+    ]);
     """
-    if data_dict_arr is None:
-        data_dict_arr = []
-    rows_str = ''
-    for data in data_dict_arr:
-        row_str = "["
-        row_str += "'" + str(data['pkg']) + "',"
-        row_str += "'" + str(data['label']) + "',"
-        row_str += "'" + str(data['tooltip']) + "',"
-        row_str += str(data['start']) + ','
-        row_str += str(data['end']) + '],'
-        rows_str += row_str
+    items_str = """
+    // create items
+    var items = new vis.DataSet(
+    """
+    items_str += json.dumps(arr_items_dict)
+    items_str += """
+    );
+    """
     if DEBUG:
-        print(rows_str)
-    return rows_str
+        print(items_str)
+    return items_str.replace('"<<<', '').replace('>>>"', '')
 
 
 def print_chart_options(colors):
     """Print Options provided to the visualization."""
-    res = "var options = {" \
-          "timeline: { colorByRowLabel: true }," \
-          "backgroundColor: '#ffd'," \
-          "tooltip: {isHtml: true},"
-    color_string = ""
-    for i in range(len(colors)):
-        color_string += "'" + colors[i] + "',"
-        pass
-    res += "colors: [%s]" \
-           "};" % color_string
+    res = "var options = {"
+    res += "timeline: { },"
+    res += "tooltip: {isHtml: true},"
+    if len(colors) > 0:
+        color_string = ""
+        for i in range(len(colors)):
+            color_string += "'" + colors[i] + "',"
+            pass
+        res += "colors: [%s]" % color_string
+    res += "};"
     return res
 
 
@@ -94,38 +99,47 @@ def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeli
     doc = dominate.document(title='LogShow')
 
     with doc.head:
-        # 冗余处理，当无法下载时，需要在同目录下放置两个js库文件
-        script(src='https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js')
-        script(src='scripts/jquery.min.js')
-        script(src='https://www.gstatic.com/charts/loader.js')
-        script(src='scripts/loader.js')
-
-    append_js_str("""
-    google.charts.load("current", {packages:["timeline"]});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        var container = document.getElementById('dashboard');
-        var chart = new google.visualization.Timeline(container);
-        var dataTable = new google.visualization.DataTable();
-    """)
-    append_js_str(print_chart_options(['black', 'gray']))
+        # double download
+        script(src='https://unpkg.com/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js',
+               type="text/javascript")
+        script(src='scripts/vis-timeline-graph2d.min.js', type="text/javascript")
+        link(href='https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css',
+             rel="stylesheet", type="text/css")
+        link(href='scripts/vis-timeline-graph2d.min.css',
+             rel="stylesheet", type="text/css")
+        pass
     json_data = parse_json_data_file(json_data_file)
-    append_js_str(print_columns('dataTable', json_data['columns']))
-    append_js_str("""dataTable.addRows([""")
-    append_js_str(print_rows(json_data['rows']))
-    append_js_str("""]);
-        chart.draw(dataTable, options);
-    }
+
+    append_js_str(print_groups(json_data['groups']))
+    append_js_str(print_rows(json_data['items']))
+    append_js_str("""
+    // specify options
+    var options = {
+      stack: true,
+      editable: false,
+      margin: {
+        item: 10, // minimal margin between items
+        axis: 5, // minimal margin between items and the axis
+      },
+      orientation: "top",
+    };
+
+    // create a Timeline
+    var container = document.getElementById("visualization");
+    timeline = new vis.Timeline(container, null, options);
+    timeline.setGroups(groups);
+    timeline.setItems(items);
+    
+    window.addEventListener("resize", () => {
+      /*timeline.checkResize();*/
+    });
     """)
 
     with doc:
+        with h1("Timeline"):
+            attr(style='width: 100%;')
         with div():
-            attr(id='dashboard', style='width: 100%; height: 98vh;')
-            with div():
-                attr(id='control', cls='chart', style='width: 100%; height: 10%;')
-            with div():
-                attr(id='chart', cls='chart', style='width: 100%; height: 90%;')
+            attr(id='visualization', style='width: 100%; height: 98vh;')
         with script(get_js_str()):
             attr(type='text/javascript')
 
@@ -161,9 +175,9 @@ def main(argv):
     except Exception as e:
         print(help_info)
         print(e)
-        if DEBUG:
-            create_html()
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    if DEBUG:
+        create_html()
+    # main(sys.argv)
