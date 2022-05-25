@@ -34,14 +34,12 @@ data = {
     "items": [
         {
             'group': 1,
-            'id': 1,
             'content': 'test group 1',
             'start': ms_str_2_date("1652953734"),
             'end': ms_str_2_date("1652963734")
         },
         {
             'group': 2,
-            'id': 2,
             'content': 'test group 2',
             'start': ms_str_2_date("1652954734"),
             'end': ms_str_2_date("1652973734")

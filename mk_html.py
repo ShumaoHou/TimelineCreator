@@ -35,11 +35,11 @@ def print_groups(arr_groups_dict):
     """
     groups_str = """
     // create groups
-    var groups = new vis.DataSet(
+    var groups_arr = 
     """
     groups_str += json.dumps(arr_groups_dict)
     groups_str += """
-    );
+    var groups = new vis.DataSet(groups_arr);
     """
     if DEBUG:
         print(groups_str)
@@ -63,30 +63,20 @@ def print_rows(arr_items_dict):
     """
     items_str = """
     // create items
-    var items = new vis.DataSet(
+    var items_arr = 
     """
     items_str += json.dumps(arr_items_dict)
     items_str += """
-    );
+    var items = new vis.DataSet(items_arr);
     """
     if DEBUG:
         print(items_str)
     return items_str.replace('"<<<', '').replace('>>>"', '')
 
 
-def print_chart_options(colors):
-    """Print Options provided to the visualization."""
-    res = "var options = {"
-    res += "timeline: { },"
-    res += "tooltip: {isHtml: true},"
-    if len(colors) > 0:
-        color_string = ""
-        for i in range(len(colors)):
-            color_string += "'" + colors[i] + "',"
-            pass
-        res += "colors: [%s]" % color_string
-    res += "};"
-    return res
+def print_local_file(local_file):
+    with open(local_file, 'r', encoding='UTF-8') as f:
+        return f.read()
 
 
 def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeline_chart.html'):
@@ -99,14 +89,14 @@ def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeli
     doc = dominate.document(title='LogShow')
 
     with doc.head:
-        # double download
         script(src='https://unpkg.com/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js',
                type="text/javascript")
-        script(src='scripts/vis-timeline-graph2d.min.js', type="text/javascript")
+        # with script(print_local_file("scripts/vis-timeline-graph2d.min.js")):
+        #     attr(type='text/javascript')
         link(href='https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css',
              rel="stylesheet", type="text/css")
-        link(href='scripts/vis-timeline-graph2d.min.css',
-             rel="stylesheet", type="text/css")
+        # with style(print_local_file("scripts/vis-timeline-graph2d.min.css")):
+        #     attr(type="text/css")
         pass
     json_data = parse_json_data_file(json_data_file)
 
@@ -150,7 +140,7 @@ def create_html(json_data_file='./data/data.json', dist_html_file='./dist/timeli
     doc_str = doc_str.replace('&gt;', '>')
     doc_str = doc_str.replace('&quot;', '"')
 
-    with open(dist_html_file, 'w') as f:
+    with open(dist_html_file, 'w', encoding='UTF-8') as f:
         f.write(doc_str)
 
     os.startfile(os.path.abspath(dist_html_file))
